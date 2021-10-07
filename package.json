@@ -1,6 +1,6 @@
 {
-  "name": "josiahayres/react-hooks",
-  "version": "0.1.0",
+  "name": "@josiahayres/react-hooks",
+  "version": "0.1.1",
   "description": "React Hooks",
   "keywords": [
     "React",
