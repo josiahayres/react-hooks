@@ -1,24 +1,24 @@
 /**
  * @jest-environment jsdom
  */
-import "@testing-library/jest-dom";
+import '@testing-library/jest-dom';
 import useFormSectionsControl, {
   FormSectionControl,
-} from "./useFormSectionsControl";
+} from './useFormSectionsControl';
 import {
   renderHook,
   act,
   RenderHookResult,
-} from "@testing-library/react-hooks";
-import { render, screen, fireEvent } from "@testing-library/react";
+} from '@testing-library/react-hooks';
+import { render, screen, fireEvent } from '@testing-library/react';
 
 let renderCount = 0;
 
 type TestFormSectionIds =
-  | "sectionOne"
-  | "sectionTwo"
-  | "sectionThree"
-  | "sectionFour";
+  | 'sectionOne'
+  | 'sectionTwo'
+  | 'sectionThree'
+  | 'sectionFour';
 
 const SimpleFormSection = ({
   sectionId,
@@ -38,7 +38,7 @@ const SimpleFormSection = ({
         <button
           type="button"
           data-testid={`edit_${sectionId}`}
-          onClick={() => dispatch({ type: "goTo", sectionId })}
+          onClick={() => dispatch({ type: 'goTo', sectionId })}
         >{`set active ${sectionId}`}</button>
       )}
 
@@ -49,7 +49,7 @@ const SimpleFormSection = ({
         <button
           type="button"
           data-testid={`submit_${sectionId}`}
-          onClick={() => dispatch({ type: "goToNextSection" })}
+          onClick={() => dispatch({ type: 'goToNextSection' })}
         >{`submit ${sectionId}`}</button>
       )}
     </div>
@@ -62,9 +62,9 @@ const SimpleFormSection = ({
  */
 const TestForm = () => {
   const formSectionControl = useFormSectionsControl<TestFormSectionIds>([
-    "sectionOne",
-    "sectionTwo",
-    "sectionThree",
+    'sectionOne',
+    'sectionTwo',
+    'sectionThree',
   ]);
   const [store] = formSectionControl;
   renderCount++;
@@ -88,210 +88,210 @@ const TestForm = () => {
   );
 };
 
-describe("hooks/useFormSectionsControl", () => {
+describe('hooks/useFormSectionsControl', () => {
   let renderedHook: RenderHookResult<
     string[],
     FormSectionControl<
-      "sectionOne" | "sectionTwo" | "sectionThree" | "sectionFour"
+      'sectionOne' | 'sectionTwo' | 'sectionThree' | 'sectionFour'
     >
   >;
   beforeEach(() => {
     renderedHook = renderHook(() =>
       useFormSectionsControl([
-        "sectionOne",
-        "sectionTwo",
-        "sectionThree",
-        "sectionFour",
-      ])
+        'sectionOne',
+        'sectionTwo',
+        'sectionThree',
+        'sectionFour',
+      ]),
     );
   });
 
-  test("Hook returns expected values", () => {
+  test('Hook returns expected values', () => {
     const { result } = renderedHook;
     const [store, dispatch, connectSection] = result.current;
 
     // Check activeSectionId
     expect(store).not.toBe(null);
     expect(store.activeSectionId).not.toBeNull();
-    expect(store.activeSectionId).toBe("sectionOne");
+    expect(store.activeSectionId).toBe('sectionOne');
     expect(store.formSections).toHaveLength(4);
-    expect(typeof dispatch).toBe("function");
-    expect(typeof connectSection).toBe("function");
+    expect(typeof dispatch).toBe('function');
+    expect(typeof connectSection).toBe('function');
   });
 
-  test("dispatch(goToNextSection) works", () => {
+  test('dispatch(goToNextSection) works', () => {
     const { result } = renderedHook;
-    expect(result.current?.[0].activeSectionId).toBe("sectionOne");
-    act(() => result.current?.[1]({ type: "goToNextSection" }));
-    expect(result.current?.[0].activeSectionId).toBe("sectionTwo");
+    expect(result.current?.[0].activeSectionId).toBe('sectionOne');
+    act(() => result.current?.[1]({ type: 'goToNextSection' }));
+    expect(result.current?.[0].activeSectionId).toBe('sectionTwo');
   });
 
-  test("dispatch(goTo) to sectionOne from sectionTwo works", () => {
+  test('dispatch(goTo) to sectionOne from sectionTwo works', () => {
     const { result } = renderedHook;
 
-    expect(result.current?.[0].activeSectionId).toBe("sectionOne");
-    act(() => result.current?.[1]({ type: "goToNextSection" }));
-    expect(result.current?.[0].activeSectionId).toBe("sectionTwo");
+    expect(result.current?.[0].activeSectionId).toBe('sectionOne');
+    act(() => result.current?.[1]({ type: 'goToNextSection' }));
+    expect(result.current?.[0].activeSectionId).toBe('sectionTwo');
     act(() =>
       result.current?.[1]({
-        type: "goTo",
-        sectionId: "sectionOne",
-      })
+        type: 'goTo',
+        sectionId: 'sectionOne',
+      }),
     );
-    expect(result.current?.[0].activeSectionId).toBe("sectionOne");
-    expect(result.current?.[0].activeSectionId).not.toBe("sectionTwo");
+    expect(result.current?.[0].activeSectionId).toBe('sectionOne');
+    expect(result.current?.[0].activeSectionId).not.toBe('sectionTwo');
   });
 
-  test("dispatch(goTo) with invaild sectionId takes user to summary", () => {
+  test('dispatch(goTo) with invaild sectionId takes user to summary', () => {
     const { result } = renderedHook;
 
-    expect(result.current?.[0].activeSectionId).toBe("sectionOne");
+    expect(result.current?.[0].activeSectionId).toBe('sectionOne');
 
     // Force TS to skip checking dispatching an invalid action.
     // This builds up code coverage
     act(() =>
       // @ts-ignore: This next action should give TS warning without this
-      result.current?.[1]({ type: "goTo", sectionId: "invalidSectionId" })
+      result.current?.[1]({ type: 'goTo', sectionId: 'invalidSectionId' }),
     );
     expect(result.current?.[0].activeSectionId).toBeNull();
     expect(result.current?.[0].haveVisitedSummary).toBeTruthy();
   });
 
-  test("dispatch(reset) works ", () => {
+  test('dispatch(reset) works ', () => {
     const { result } = renderedHook;
 
-    act(() => result.current?.[1]({ type: "goToNextSection" }));
-    act(() => result.current?.[1]({ type: "goToNextSection" }));
-    act(() => result.current?.[1]({ type: "goToNextSection" }));
-    act(() => result.current?.[1]({ type: "goToNextSection" }));
+    act(() => result.current?.[1]({ type: 'goToNextSection' }));
+    act(() => result.current?.[1]({ type: 'goToNextSection' }));
+    act(() => result.current?.[1]({ type: 'goToNextSection' }));
+    act(() => result.current?.[1]({ type: 'goToNextSection' }));
 
     expect(result.current?.[0].activeSectionId).toBeNull();
     expect(result.current?.[0].haveVisitedSummary).toBeTruthy();
 
-    act(() => result.current?.[1]({ type: "goTo", sectionId: "sectionOne" }));
-    act(() => result.current?.[1]({ type: "reset" }));
+    act(() => result.current?.[1]({ type: 'goTo', sectionId: 'sectionOne' }));
+    act(() => result.current?.[1]({ type: 'reset' }));
 
     expect(result.current?.[0].activeSectionId).not.toBeNull();
-    expect(result.current?.[0].activeSectionId).toBe("sectionOne");
+    expect(result.current?.[0].activeSectionId).toBe('sectionOne');
     expect(result.current?.[0].haveVisitedSummary).toBeFalsy();
   });
 
-  test("haveVisitedSummary is updated", () => {
+  test('haveVisitedSummary is updated', () => {
     const { result } = renderedHook;
 
-    expect(result.current?.[0].activeSectionId).toBe("sectionOne");
+    expect(result.current?.[0].activeSectionId).toBe('sectionOne');
     expect(result.current?.[0].haveVisitedSummary).toBeFalsy();
-    act(() => result.current?.[1]({ type: "goToNextSection" })); // Go to section 2
-    act(() => result.current?.[1]({ type: "goToNextSection" })); // Go to section 3
-    act(() => result.current?.[1]({ type: "goToNextSection" })); // Go to notifications
-    act(() => result.current?.[1]({ type: "goToNextSection" })); // Go to summary
+    act(() => result.current?.[1]({ type: 'goToNextSection' })); // Go to section 2
+    act(() => result.current?.[1]({ type: 'goToNextSection' })); // Go to section 3
+    act(() => result.current?.[1]({ type: 'goToNextSection' })); // Go to notifications
+    act(() => result.current?.[1]({ type: 'goToNextSection' })); // Go to summary
     expect(result.current?.[0].activeSectionId).toBeNull();
     expect(result.current?.[0].haveVisitedSummary).toBeTruthy();
   });
 
-  test("Option initialActiveSectionId works when set", () => {
+  test('Option initialActiveSectionId works when set', () => {
     const { result } = renderHook(() =>
       useFormSectionsControl(
-        ["sectionOne", "sectionTwo", "sectionThree", "sectionFour"],
-        { initialActiveSectionId: "sectionThree" }
-      )
+        ['sectionOne', 'sectionTwo', 'sectionThree', 'sectionFour'],
+        { initialActiveSectionId: 'sectionThree' },
+      ),
     );
 
-    expect(result.current?.[0].activeSectionId).toBe("sectionThree");
+    expect(result.current?.[0].activeSectionId).toBe('sectionThree');
     expect(result.current?.[0].haveVisitedSummary).toBeFalsy();
 
-    act(() => result.current?.[1]({ type: "goToNextSection" }));
-    expect(result.current?.[0].activeSectionId).toBe("sectionFour");
+    act(() => result.current?.[1]({ type: 'goToNextSection' }));
+    expect(result.current?.[0].activeSectionId).toBe('sectionFour');
 
-    act(() => result.current?.[1]({ type: "goToNextSection" }));
+    act(() => result.current?.[1]({ type: 'goToNextSection' }));
     expect(result.current?.[0].activeSectionId).toBeNull();
     expect(result.current?.[0].haveVisitedSummary).toBeTruthy();
   });
 
-  test("haveVisitedSummary is true when initialActiveSectionId set to null", () => {
+  test('haveVisitedSummary is true when initialActiveSectionId set to null', () => {
     const { result } = renderHook(() =>
       useFormSectionsControl(
-        ["sectionOne", "sectionTwo", "sectionThree", "sectionFour"],
-        { initialActiveSectionId: null }
-      )
+        ['sectionOne', 'sectionTwo', 'sectionThree', 'sectionFour'],
+        { initialActiveSectionId: null },
+      ),
     );
 
     expect(result.current?.[0].activeSectionId).toBeNull();
     expect(result.current?.[0].haveVisitedSummary).toBeTruthy();
 
-    act(() => result.current?.[1]({ type: "goTo", sectionId: "sectionTwo" }));
+    act(() => result.current?.[1]({ type: 'goTo', sectionId: 'sectionTwo' }));
 
-    expect(result.current?.[0].activeSectionId).toBe("sectionTwo");
+    expect(result.current?.[0].activeSectionId).toBe('sectionTwo');
   });
 
-  test("dispatch(unhandledAction) does not crash", () => {
+  test('dispatch(unhandledAction) does not crash', () => {
     const { result } = renderedHook;
 
     // Force TS to skip checking dispatching an invalid action.
     // This builds up code coverage
     // @ts-ignore: This next action should give TS warning without this
-    act(() => result.current?.[1]({ type: "unhandled" }));
+    act(() => result.current?.[1]({ type: 'unhandled' }));
     expect(result.current?.[0].activeSectionId).not.toBeNull();
   });
 });
 
-describe("Code coverage bump", () => {
-  test("Call hook with empty options object", () => {
+describe('Code coverage bump', () => {
+  test('Call hook with empty options object', () => {
     const { result } = renderHook(() =>
       useFormSectionsControl(
-        ["sectionOne", "sectionTwo", "sectionThree", "sectionFour"],
-        { initialActiveSectionId: null }
-      )
+        ['sectionOne', 'sectionTwo', 'sectionThree', 'sectionFour'],
+        { initialActiveSectionId: null },
+      ),
     );
     expect(result.current?.[0].activeSectionId).toBe(null);
   });
-  test("Call hook with empty sectionIds, no options", () => {
+  test('Call hook with empty sectionIds, no options', () => {
     const { result } = renderHook(() => useFormSectionsControl([]));
     expect(result.current?.[0].activeSectionId).toBe(null);
   });
-  test("Call hook with empty sectionIds, option initialActiveSectionId=null", () => {
+  test('Call hook with empty sectionIds, option initialActiveSectionId=null', () => {
     const { result } = renderHook(() =>
-      useFormSectionsControl([], { initialActiveSectionId: null })
+      useFormSectionsControl([], { initialActiveSectionId: null }),
     );
     expect(result.current?.[0].activeSectionId).toBe(null);
   });
   test("Call hook with empty sectionIds, option initialActiveSectionId=''", () => {
     const { result } = renderHook(() =>
-      useFormSectionsControl([], { initialActiveSectionId: "" })
+      useFormSectionsControl([], { initialActiveSectionId: '' }),
     );
     expect(result.current?.[0].activeSectionId).toBe(null);
   });
 });
 
-describe("Can render complex form with three sections", () => {
+describe('Can render complex form with three sections', () => {
   beforeEach(() => {
     renderCount = 0;
     render(<TestForm />);
   });
 
-  test("First form section is open by default.", () => {
-    expect(screen.getAllByRole("button").length).toBeGreaterThan(0);
+  test('First form section is open by default.', () => {
+    expect(screen.getAllByRole('button').length).toBeGreaterThan(0);
     expect(screen.getByText(/one is active/i)).toBeInTheDocument();
     expect(screen.getByText(/two not active/i)).toBeInTheDocument();
     expect(screen.getByText(/three not active/i)).toBeInTheDocument();
   });
 
-  test("Can click through each form section to summary", () => {
+  test('Can click through each form section to summary', () => {
     expect(screen.getByText(/active: "sectionOne"/i)).toBeInTheDocument();
 
-    fireEvent.click(screen.getByTestId("submit_sectionOne"));
+    fireEvent.click(screen.getByTestId('submit_sectionOne'));
     expect(screen.getByText(/active: "sectionTwo"/i)).toBeInTheDocument();
     expect(screen.getByText(/one not active/i)).toBeInTheDocument();
     expect(screen.getByText(/two is active/i)).toBeInTheDocument();
     expect(screen.getByText(/three not active/i)).toBeInTheDocument();
 
-    fireEvent.click(screen.getByTestId("submit_sectionTwo"));
+    fireEvent.click(screen.getByTestId('submit_sectionTwo'));
     expect(screen.getByText(/active: "sectionThree"/i)).toBeInTheDocument();
     expect(screen.getByText(/one not active/i)).toBeInTheDocument();
     expect(screen.getByText(/two not active/i)).toBeInTheDocument();
     expect(screen.getByText(/three is active/i)).toBeInTheDocument();
 
-    fireEvent.click(screen.getByTestId("submit_sectionThree"));
+    fireEvent.click(screen.getByTestId('submit_sectionThree'));
     expect(screen.getByText(/active: null/i)).toBeInTheDocument();
     expect(screen.getByText(/one not active/i)).toBeInTheDocument();
     expect(screen.getByText(/two not active/i)).toBeInTheDocument();
@@ -301,38 +301,38 @@ describe("Can render complex form with three sections", () => {
   test("Can't edit a section ahead of active section", () => {
     expect(screen.getByText(/render count: 1/i)).toBeInTheDocument();
 
-    fireEvent.click(screen.getByTestId("submit_sectionOne"));
+    fireEvent.click(screen.getByTestId('submit_sectionOne'));
 
     expect(screen.getByText(/render count: 2/i)).toBeInTheDocument();
     expect(screen.getByText(/active: "sectionTwo"/i)).toBeInTheDocument();
-    expect(screen.queryByTestId("edit_sectionOne")).toBeInTheDocument();
+    expect(screen.queryByTestId('edit_sectionOne')).toBeInTheDocument();
 
-    fireEvent.click(screen.getByTestId("submit_sectionTwo"));
+    fireEvent.click(screen.getByTestId('submit_sectionTwo'));
 
     expect(screen.getByText(/render count: 3/i)).toBeInTheDocument();
-    expect(screen.queryByTestId("edit_sectionThree")).toBeNull();
+    expect(screen.queryByTestId('edit_sectionThree')).toBeNull();
     expect(screen.getByText(/active: "sectionThree"/i)).toBeInTheDocument();
-    expect(screen.queryByTestId("edit_sectionOne")).toBeInTheDocument();
-    expect(screen.queryByTestId("edit_sectionTwo")).toBeInTheDocument();
+    expect(screen.queryByTestId('edit_sectionOne')).toBeInTheDocument();
+    expect(screen.queryByTestId('edit_sectionTwo')).toBeInTheDocument();
 
-    fireEvent.click(screen.getByTestId("edit_sectionOne"));
+    fireEvent.click(screen.getByTestId('edit_sectionOne'));
 
     expect(screen.getByText(/active: "sectionOne"/i)).toBeInTheDocument();
-    expect(screen.queryByTestId("edit_sectionTwo")).toBeNull();
-    expect(screen.queryByTestId("edit_sectionThree")).toBeNull();
+    expect(screen.queryByTestId('edit_sectionTwo')).toBeNull();
+    expect(screen.queryByTestId('edit_sectionThree')).toBeNull();
   });
 
-  test("After getting to the summary, submitting an edit in section one should return to the summary, not section two. ", () => {
-    fireEvent.click(screen.getByTestId("submit_sectionOne"));
-    fireEvent.click(screen.getByTestId("submit_sectionTwo"));
-    fireEvent.click(screen.getByTestId("submit_sectionThree"));
+  test('After getting to the summary, submitting an edit in section one should return to the summary, not section two. ', () => {
+    fireEvent.click(screen.getByTestId('submit_sectionOne'));
+    fireEvent.click(screen.getByTestId('submit_sectionTwo'));
+    fireEvent.click(screen.getByTestId('submit_sectionThree'));
 
     expect(screen.getByText(/active: null/i)).toBeInTheDocument();
 
-    fireEvent.click(screen.getByTestId("edit_sectionOne"));
+    fireEvent.click(screen.getByTestId('edit_sectionOne'));
     expect(screen.getByText(/active: "sectionOne"/i)).toBeInTheDocument();
 
-    fireEvent.click(screen.getByTestId("submit_sectionOne"));
+    fireEvent.click(screen.getByTestId('submit_sectionOne'));
     expect(screen.queryByText(/active: "sectionTwo"/i)).toBeNull();
     expect(screen.getByText(/active: null/i)).toBeInTheDocument();
   });
