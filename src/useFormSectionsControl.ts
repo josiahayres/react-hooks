@@ -41,7 +41,7 @@ export type FormSectionControl<T> = [
  */
 export type Options<T> = {
   /** haveVisitedSummary defaults to this. When it's true, activeSectionId is set to null */
-  initialActiveSectionId?: T;
+  initialActiveSectionId?: T | null;
 };
 
 /**
